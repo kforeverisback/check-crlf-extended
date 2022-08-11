@@ -1,6 +1,6 @@
-name: check-crlf
-author: erclu
-description: "Checks for non-binary files with CRLF endings in given path"
+name: check-crlf-extended
+author: kforeverisback
+description: "Checks for non-binary files with CRLF/LF endings in given path"
 
 branding:
   icon: file-text
@@ -14,11 +14,23 @@ runs:
     - ${{ inputs.exclude }}
 
 inputs:
-  path:
-    description: Path to check, separated with "/"
+  directory:
+    description: Directory/Folder path to check
     required: false
     default: "."
-  exclude:
-    description: Space-separated list of words to exclude
+  line_ending_type:
+    description: "Check CRLF/LF or mixed line ending.
+      Possible values are CRLF, LF and MIXED (case insensitive).
+      CRLF: Checks files only with CRLF line endings.
+      LF: Checks files only with LF line endings.
+      MIXED: Checks files only with CRLF and LF (mixed) line endings."
+    required: false
+    default: "crlf"
+  include_pattern:
+    description: Glob pattern for matching file names (not directory)
+    required: false
+    default: "*"
+  exclude_pattern:
+    description: "Comma separated list of glob pattern for excluding file names (not directory). It cannot be *"
     required: false
     default: ""
