@@ -1,40 +1,43 @@
-#!/bin/sh
+#!/bin/bash
 # this is a sorry excuse for a test, but hey, it kinda works
 
 #tmpdir=$(mktemp -d)
 tmpdir=temp;mkdir -p $tmpdir
 
-printf "Line1\r\nLine2" >"$tmpdir/crlf-only"
-printf "Line1\r\nLine2\nLine3" >"$tmpdir/crlf-with-lf-mwixed"
-printf "Line1\nLine2" >"$tmpdir/lf-only"
-printf "Line1\r\nLine2" >"$tmpdir/exclude-crlf"
-printf "Line1\nLine2" >"$tmpdir/exclude-lf"
-printf "Line1\r\nLine2\nLine3" >"$tmpdir/exclude-mixed"
-# exit
+# alias podman=podman
+
+./create-test-files.sh $tmpdir
 # Usage: ./entrypoint.sh folder/file-patttern CRLF/LF/MIXED INCLUDE_PATTERN EXCLUDE_PATTERN
+set -f
+set -o noglob
 
-echo Check: folder, CRLF only, include all, no exclude
-./entrypoint.sh $tmpdir CRLF "\*"
+echo 'Building test image...'
+podman build -t crlf-test .
 
-echo Check: folder, CRLF only, include some, no exclude
-./entrypoint.sh $tmpdir CRLF "exclude-crlf*"
+echo '\nCheck: folder, CRLF only, include all, no exclude'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) crlf '*'
 
-echo Check: folder, LF only, include all, no exclude
-./entrypoint.sh $tmpdir lf "\*"
+echo '\nCheck: folder, CRLF only, include some, no exclude'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) CRLF "exclude-crlf*"
 
-echo Check: folder, LF only, include some, no exclude
-./entrypoint.sh $tmpdir lf "exclude-lf*"
+echo '\nCheck: folder, CRLF only, include some, exclude sub dir'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) CRLF "exclude-crlf*" "subdir/*"
 
-echo Check: folder, mixed, include all, no exclude
-./entrypoint.sh $tmpdir mixed "\*"
+echo '\nCheck: folder, LF only, include all, no exclude'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) lf "*"
 
-echo Check: folder, mixed, include some, no exclude
-./entrypoint.sh $tmpdir mixed "crlf*"
+echo '\nCheck: folder, LF only, include some, no exclude'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) lf "exclude-lf*"
+
+echo '\nCheck: folder, mixed, include all, no exclude'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) mixed "*"
+
+echo '\nCheck: folder, mixed, include some, no exclude'
+podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) mixed "crlf*"
 
 RESULT="$?"
 
 rm -rv "$tmpdir"
 
-# is there a better way to do this?
-[ $RESULT -eq 1 ]
-exit $?
+[ -z $KEEP_TEST_IMAGE ] && podman rmi crlf-test
+exit $RESULT
