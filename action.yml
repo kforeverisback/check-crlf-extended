@@ -1,6 +1,6 @@
 name: check-crlf-extended
 author: kforeverisback
-description: "Checks for non-binary files with CRLF/LF endings in given path"
+description: "Checks for non-binary files with CRLF/LF endings in given path. It automatically excludes .git and .github folder from search"
 
 branding:
   icon: file-text
@@ -10,27 +10,42 @@ runs:
   using: "docker"
   image: "Dockerfile"
   args:
-    - ${{ inputs.path }}
-    - ${{ inputs.exclude }}
+    - ${{ inputs.directory }}
+    - ${{ inputs.line_ending_type }}
+    - ${{ inputs.include_regex }}
+    - ${{ inputs.exclude_regex }}
+    - ${{ inputs.exclude_first }}
+    - ${{ inputs.max_folder_depth }}
 
 inputs:
   directory:
-    description: Directory/Folder path to check
+    description: Directory/Folder path to check.
     required: false
     default: "."
   line_ending_type:
     description: "Check CRLF/LF or mixed line ending.
-      Possible values are CRLF, LF and MIXED (case insensitive).
-      CRLF: Checks files only with CRLF line endings.
-      LF: Checks files only with LF line endings.
-      MIXED: Checks files only with CRLF and LF (mixed) line endings."
+                  Possible values are CRLF, LF and MIXED (case insensitive).
+                  - CRLF: Checks files only with CRLF line endings.
+                  - LF: Checks files only with LF line endings.
+                  - MIXED: Checks files both with CRLF and LF (mixed) line endings."
     required: false
     default: "crlf"
-  include_pattern:
-    description: Glob pattern for matching file names (not directory)
+  include_regex:
+    description: "Regular expression for including files (using grep -E).
+                  Note: Remember, based on the `directory` input the reges can be different. For example, default `directory` is '.', so after searching, all file paths will have `./` appended. So take that into consideration when using regex pattern"
     required: false
-    default: "*"
-  exclude_pattern:
-    description: "Comma separated list of glob pattern for excluding file names (not directory). It cannot be *"
+    default: ""
+  exclude_regex:
+    description: "Regular expression for excluding files (using grep -v -E).
+                  Note: the repository is found at `/`. So take that into consideration when using regex pattern"
+    required: false
+    default: ""
+  exclude_first:
+    description: "By default the `include_regex` is applied to all files then the `exclude_pattern`.
+                  If this is set to `true` then exclude pattern (if provided) will be applied first (possible values, 'true', 'false'"
+    required: false
+    default: "false"
+  max_folder_depth:
+    description: "Max depth of folder to search for files. Repo root directory `/` is at depth 0, files are at least at depth 1. See `man find` for more information."
     required: false
     default: ""

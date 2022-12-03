@@ -7,37 +7,52 @@ tmpdir=temp;mkdir -p $tmpdir
 # alias podman=podman
 
 ./create-test-files.sh $tmpdir
-# Usage: ./entrypoint.sh folder/file-patttern CRLF/LF/MIXED INCLUDE_PATTERN EXCLUDE_PATTERN
+# Mandatory arguments
+# folder="$1"
+# line_ending_type="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
+
+# # Optional arguemnts, empty by default
+# include_regex="$3"
+# exclude_regex="$4"
+# exclude_first="$(echo "$5" | tr '[:upper:]' '[:lower:]')"
+# max_folder_depth=$6
+# Usage: ./entrypoint.sh folder/file-patttern CRLF/LF/MIXED include_regex exclude_regex exclude_first max_folder_depth
 set -f
 set -o noglob
 
 echo 'Building test image...'
 podman build -t crlf-test .
 
-echo '\nCheck: folder, CRLF only, include all, no exclude'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) crlf '*'
+echo -e '\nCheck: folder, CRLF only, include all, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . crlf
 
-echo '\nCheck: folder, CRLF only, include some, no exclude'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) CRLF "exclude-crlf*"
+echo -e '\nCheck: folder, CRLF only, include onlcude exclude*, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . CRLF "exclude-crlf"
 
-echo '\nCheck: folder, CRLF only, include some, exclude sub dir'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) CRLF "exclude-crlf*" "subdir/*"
+echo -e '\nCheck: folder, CRLF only, include some, exclude subdir'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . CRLF "crlf.*" "^\./subdir"
 
-echo '\nCheck: folder, LF only, include all, no exclude'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) lf "*"
+echo -e '\nCheck: folder, LF only, include all, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . lf
 
-echo '\nCheck: folder, LF only, include some, no exclude'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) lf "exclude-lf*"
+echo -e '\nCheck: folder, LF only, include some, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . lf "exclude-lf"
 
-echo '\nCheck: folder, mixed, include all, no exclude'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) mixed "*"
+echo -e '\nCheck: folder, LF only, include only ./subdir/ exlude all "exclude" files'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . lf "^\./subdir/" "exclude"
 
-echo '\nCheck: folder, mixed, include some, no exclude'
-podman run -t --rm -v $(realpath $tmpdir):$(realpath $tmpdir) crlf-test $(realpath $tmpdir) mixed "crlf*"
+echo -e '\nCheck: folder, mixed, include all, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . mixed
+
+echo -e '\nCheck: folder, mixed, include some, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . mixed "crlf.*"
+
+echo -e '\nCheck: folder, mixed, include some, no exclude'
+podman run -t --rm --workdir /repo -v "$(realpath $tmpdir):/repo" crlf-test . mixed "crlf.*"
 
 RESULT="$?"
 
-rm -rv "$tmpdir"
+rm -r "$tmpdir"
 
-[ -z $KEEP_TEST_IMAGE ] && podman rmi crlf-test
+[ -z "$KEEP_TEST_IMAGE" ] && podman rmi crlf-test
 exit $RESULT
