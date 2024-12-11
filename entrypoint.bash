@@ -4,7 +4,7 @@
 set -f
 set -e
 shopt -s extglob
-set -o pipefail
+# set -o pipefail
 # Debugging
 # exec 5> ./debug_output.txt
 # BASH_XTRACEFD="5"
@@ -13,6 +13,7 @@ set -o pipefail
 # set -u
 
 # Shamelessly stolen from http://github.com/deanrather/bash-logger
+export LOG_ENABLE_COLOR=true
 source "$(dirname $0)/bash-logger.bash"
 
 usage() {
@@ -32,7 +33,7 @@ usage() {
     Arg              Description
     -------------------------------------------------
     -t  TARGET_DIR   Target dir to scan [default: '.'].
-                     NOTE: TARGET_DIR will be included when matching regex .
+                     NOTE: TARGET_DIR will be included in the path when matching regex.
                      So craft your regex accordingly.
                      e.g. if you want to include files only in the 'subdir', use '^./target-dir/subdir/.*'
     -l  LINE_ENDING  Line Ending type [default: 'CRLF'].
@@ -74,22 +75,25 @@ done
 # All args are optional and have default values
 target_dir="${target_dir:-"."}"  # Default is current directory
 # [[ -z $folder ]] && folder="." # Default is current directory
-line_ending_type="${line_ending_type:-"CRLF"}"  # Default is CRLF
+line_ending_type="${line_ending_type:-"crlf"}"  # Default is CRLF
 line_ending_type="$(tr '[:upper:]' '[:lower:]' <<< "$line_ending_type")"
 include_regex="${include_regex:-".*"}"  # Default is include all
 exclude_regex="${exclude_regex:-"^$"}"  # Default exclude none
 max_dir_depth=${max_dir_depth:-999}
 
-INFO "Include Regex   : '$include_regex'"
-INFO "Exclude Regex   : '$exclude_regex'"
-INFO "Max dir Depth   : '$max_dir_depth'"
 INFO "Line Ending Type: '$line_ending_type'"
+INFO "Include regex   : '$include_regex'"
+INFO "Exclude regex   : '$exclude_regex'"
+INFO "Max dir depth   : '$max_dir_depth'"
+INFO "Target directory: $target_dir"
+WARNING "'$target_dir' will be included in the path, so craft your regex accordingly"
 # log_info "Checking '$line_ending_type' endings in directory: $target_dir"
 
 # declare -a files_array 
-mapfile -d '' files_array < <(find "$target_dir" -maxdepth "$max_dir_depth" -not -path "*/.git/*" -type f -regex "$include_regex" -not -regex "$exclude_regex" -print0 -exec file {} '+')
+mapfile -d '' files_array < <(find "$target_dir" -maxdepth "$max_dir_depth" -not -path "*/.git/*" -type f -regex "$include_regex" -not -regex "$exclude_regex" -print0 | xargs -r0 file)
 
-  case "$line_ending_type" in
+# echo "${files_array[@]}"
+case "$line_ending_type" in
   crlf)
     found_files=$(echo "${files_array[@]}" | grep ' CRLF ' | cut -d ":" -f 1)
     ;;
@@ -107,13 +111,14 @@ esac
 # echo Files found "$(echo "${found_files[@]}" | wc -l)":
 # echo "${found_files[*]}"
 
-if [ -z "$found_files" ]; then
+if [ -z "${found_files[*]}" ]; then
   WARNING "No files with $line_ending_type endings found."
   exit 0
 else
   count_of_file=$(echo "${found_files[@]}" | wc -l)
   NOTICE "Found ${count_of_file} files with $line_ending_type endings."
-  NOTICE "${found_files[*]}"
+  INFO "List of files:"
+  echo "${found_files[@]}"
 
   # Output to Github's next stage
   [ -n "$GITHUB_OUTPUT" ] && echo "${found_files[*]}" >> "$GITHUB_OUTPUT"
