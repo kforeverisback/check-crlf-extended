@@ -1,9 +1,9 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
-COPY entrypoint.sh /
 
-RUN apk add --no-cache bash file \
-    && echo 'set -o noglob' > /etc/profile.d/bash_noglob.sh \
-    && chmod +x /entrypoint.sh 
+RUN apk add --no-cache bash file
+    # && echo 'set -o noglob' > /etc/profile.d/bash_noglob.sh \
+COPY entrypoint.bash bash-logger.bash /root/
+RUN chmod +x /root/entrypoint.bash 
 
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/root/entrypoint.bash"]
