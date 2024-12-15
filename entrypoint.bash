@@ -12,7 +12,7 @@ shopt -s extglob
 # set -x
 # set -u
 
-# Shamelessly stolen from http://github.com/deanrather/bash-logger
+# Shamelessly stolen (and modified) from http://github.com/deanrather/bash-logger
 export LOG_ENABLE_COLOR=true
 source "$(dirname $0)/bash-logger.bash"
 
