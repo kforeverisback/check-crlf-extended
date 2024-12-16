@@ -121,8 +121,8 @@ else
   echo "${found_files[@]}"
 
   # Output to Github's next stage
-  echo -n "FILE_LIST<<||"
-  echo "${found_files[*]}" | tr '\n' '||' >> "$GITHUB_OUTPUT"
+  echo -n "FILE_LIST<<,"
+  echo "${found_files[*]}" | tr '\n' ',' >> "GITHUB_OUTPUT"
   # echo "$GITHUB_OUTPUT"
   exit 1
 fi
