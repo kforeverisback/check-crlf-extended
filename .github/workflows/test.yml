@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Generate test files
         run: |
-          bash create-test-files.bash "${{ github.workspace }}/test-files"
+          bash create-test-files.bash "./test-files"
       - name: Check CRLF files
         uses: ./ # Uses an action in the root directory
         id: crlf_check
@@ -25,21 +25,21 @@ jobs:
         id: lf_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'LF'
       - name: Check Mixed files
         uses: ./ # Uses an action in the root directory
         id: mixed_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'Mixed'
       - name: Check CRLF files with include regex
         uses: ./ # Uses an action in the root directory
         id: crlf_inc_regex_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'CRLF'
           include_regex: '.*CAP$'
       - name: Check LF files with include regex
@@ -47,7 +47,7 @@ jobs:
         id: lf_inc_regex_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'LF'
           include_regex: '.*CAP$'
       - name: Check CRLF files with exclude regex
@@ -55,7 +55,7 @@ jobs:
         id: crlf_exc_regex_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'CRLF'
           include_regex: '*.EXCLUDE.*'
       - name: Check LF files with exclude regex
@@ -63,7 +63,7 @@ jobs:
         id: lf_exc_regex_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'LF'
           include_regex: '*.EXCLUDE.*'
       - name: Check file depth for CRLF
@@ -71,7 +71,7 @@ jobs:
         id: crlf_depth_check
         continue-on-error: true
         with:
-          directory: ${{ github.workspace }}/test-files
+          directory: ./test-files
           line_ending_type: 'crLF'
           max_dir_depth: '1'
       # Use the output from the `hello` step
