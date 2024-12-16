@@ -17,23 +17,27 @@ jobs:
       - name: Check CRLF files
         uses: ./ # Uses an action in the root directory
         id: crlf_check
+        continue-on-error: true
         with:
           line_ending_type: 'CRLF'
       - name: Check LF files
         uses: ./ # Uses an action in the root directory
         id: lf_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'LF'
       - name: Check Mixed files
         uses: ./ # Uses an action in the root directory
         id: mixed_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'Mixed'
       - name: Check CRLF files with include regex
         uses: ./ # Uses an action in the root directory
         id: crlf_inc_regex_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'CRLF'
@@ -41,6 +45,7 @@ jobs:
       - name: Check LF files with include regex
         uses: ./ # Uses an action in the root directory
         id: lf_inc_regex_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'LF'
@@ -48,6 +53,7 @@ jobs:
       - name: Check CRLF files with exclude regex
         uses: ./ # Uses an action in the root directory
         id: crlf_exc_regex_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'CRLF'
@@ -55,6 +61,7 @@ jobs:
       - name: Check LF files with exclude regex
         uses: ./ # Uses an action in the root directory
         id: lf_exc_regex_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'LF'
@@ -62,6 +69,7 @@ jobs:
       - name: Check file depth for CRLF
         uses: ./ # Uses an action in the root directory
         id: crlf_depth_check
+        continue-on-error: true
         with:
           directory: ${GITHUB_WORKSPACE}/test-files
           line_ending_type: 'crLF'
