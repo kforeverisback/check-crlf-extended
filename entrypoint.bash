@@ -116,17 +116,17 @@ if [ -z "${found_files[*]}" ]; then
   exit 0
 else
   count_of_file=$(echo "${found_files[@]}" | wc -l)
-  WARNING "Found ${count_of_file} files with $line_ending_type endings."
-  INFO "List of files:"
+  ERROR "Found ${count_of_file} files with $line_ending_type endings."
+  WARNING "List of files:"
   echo "${found_files[@]}"
 
   # Output to Github's next stage
-  if [[ -n "$GITHUB_OUTPUT" ]]; then
+  if [[ -n "$GITHUB_ENV" ]]; then
     {
       echo "FILE_LIST<<,"
       echo "${found_files[*]}"
       echo ","
-    } >> "GITHUB_OUTPUT"
+    } >> "$GITHUB_ENV"
   fi
   # echo "$GITHUB_OUTPUT"
   exit 1
