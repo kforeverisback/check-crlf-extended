@@ -116,15 +116,17 @@ if [ -z "${found_files[*]}" ]; then
   exit 0
 else
   count_of_file=$(echo "${found_files[@]}" | wc -l)
-  NOTICE "Found ${count_of_file} files with $line_ending_type endings."
+  WARNING "Found ${count_of_file} files with $line_ending_type endings."
   INFO "List of files:"
   echo "${found_files[@]}"
 
   # Output to Github's next stage
-  echo -n "FILE_LIST<<,"
-  echo "${found_files[*]}" >> "GITHUB_OUTPUT"
+  if [[ -n "$GITHUB_OUTPUT" ]]; then
+    echo "FILE_LIST<<,"
+    echo "${found_files[*]}" >> "GITHUB_OUTPUT"
+    echo ","
+  fi
   # echo "$GITHUB_OUTPUT"
-  echo ","
   exit 1
 fi
 
