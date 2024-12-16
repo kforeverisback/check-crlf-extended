@@ -50,6 +50,24 @@ jobs:
           directory: ./test-files
           line_ending_type: 'LF'
           include_regex: '.*CAP$'
+      - name: Check LF files with include+exclude regex
+        uses: ./ # Uses an action in the root directory
+        id: lf_inc_exc_regex_check
+        continue-on-error: true
+        with:
+          directory: ./test-files
+          line_ending_type: 'LF'
+          include_regex: '.*CAP$'
+          exclude_regex: '.*(EXCLUDE|exclude).*'
+      - name: Check CRLF files with include+exclude regex
+        uses: ./ # Uses an action in the root directory
+        id: crlf_inc_exc_regex_check
+        continue-on-error: true
+        with:
+          directory: ./test-files
+          line_ending_type: 'CRLF'
+          include_regex: '.*CAP$'
+          exclude_regex: '.*(EXCLUDE|exclude).*'
       - name: Check CRLF files with exclude regex
         uses: ./ # Uses an action in the root directory
         id: crlf_exc_regex_check
