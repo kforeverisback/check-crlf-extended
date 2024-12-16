@@ -57,7 +57,7 @@ jobs:
         with:
           directory: ./test-files
           line_ending_type: 'CRLF'
-          exclude_regex: '*.EXCLUDE.*'
+          exclude_regex: '.*EXCLUDE.*'
       - name: Check LF files with exclude regex
         uses: ./ # Uses an action in the root directory
         id: lf_exc_regex_check
@@ -65,7 +65,7 @@ jobs:
         with:
           directory: ./test-files
           line_ending_type: 'LF'
-          exclude_regex: '*.EXCLUDE.*'
+          exclude_regex: '.*EXCLUDE.*'
       - name: Check file depth for CRLF
         uses: ./ # Uses an action in the root directory
         id: crlf_depth_check
