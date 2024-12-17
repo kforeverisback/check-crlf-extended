@@ -12,7 +12,7 @@
 #--------------------------------------------------------------------------------------------------
 # Log Configurables
 # Export lOG_ENABLE_COLOR to enable color output. Is disabled by default
-#export LOG_ENABLE_COLOR=true
+export LOG_ENABLE_COLOR=true
 # export LOGFILE=~/bash-logger.log
 export LOG_FORMAT='%DATE %PID [%LEVEL] %MESSAGE'
 export LOG_DATE_FORMAT='+%F %T %Z'                  # Eg: 2014-09-07 21:51:57 EST
