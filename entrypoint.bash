@@ -31,19 +31,22 @@ usage() {
     Arg              Description
     -------------------------------------------------
     -t  TARGET_DIR   Target dir to scan [default: '.'].
-                     NOTE: TARGET_DIR will be included in the path when matching regex.
-                     So craft your regex accordingly.
-                     e.g. if you want to include files only in the 'subdir', use '^./target-dir/subdir/.*'
+                     NOTE: TARGET_DIR will be included in the path when
+                     using 'regex' pattern_type. So craft your regex accordingly.
+                     e.g. if you want to include files only in the 'subdir',
+                     use '^./target-dir/subdir/.*'
     -l  LINE_ENDING  Line Ending type [default: 'CRLF'].
                      Valid values comes from 'file' cmd (CRLF, LF, or MIXED).
-    -i  INCL_PATTERN Regex to include path(s) [default '.*'].
-    -e  EXCL_PATTERN Regex to exclude path(s) [default:: '^$'].
+    -i  INCL_PATTERN Regex to include path(s) [default '*'].
+    -e  EXCL_PATTERN Regex to exclude path(s) [default:: ''].
     -d  DIR_DEPTH    Directory depth to search [default: 999].
-    -h  --help       Show this help message.
+    -p  PATTERN_TYPE Type of pattern match to use (possible val: shell_glob or regex)
+                     [default: shell_glob].
+    -h|--help        Show this help message.
     
     ***NOTE***
-      1. It uses 'find' cmd to search the TARGET_DIR and apply include/exclude regex.
-         So find's standard behavior applies. 
+      1. It uses 'find' cmd to search the TARGET_DIR and apply include/exclude regex or glob.
+         So find's standard behavior applies. See https://man7.org/linux/man-pages/man1/find.1.html for more info
       2. The '.git' directory is auto excluded from the search.
     "
 }
@@ -51,17 +54,17 @@ usage() {
 while [ $# -gt 0 ]; do
     opt="$1" value="$2"
     case "$opt" in
-        -t|--target-dir)
+        -t)
         target_dir="$value";shift 1;;
-        -l|--line-ending)
+        -l)
         line_ending_type="$value";shift 1;;
-        -i|--include)
+        -i)
         include_pattern="$value";shift 1;;
-        -e|--exclude)
+        -e)
         exclude_pattern="$value";shift 1;;
-        -d|--dir-depth)
+        -d)
         max_dir_depth="$value";shift 1;;
-        -p|--pattern-type)
+        -p)
         pattern_type="$value";shift 1;;
         -h|--help)
             usage;exit 0;;

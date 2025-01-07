@@ -17,11 +17,14 @@ runs:
     - -l
     - ${{ inputs.line_ending_type }}
     - -i
-    - ${{ inputs.include_regex }}
+    - ${{ inputs.include_pattern }}
     - -e
-    - ${{ inputs.exclude_regex }}
+    - ${{ inputs.exclude_pattern }}
     - -d
     - ${{ inputs.max_dir_depth }}
+    - -p
+    - ${{ inputs.pattern_type }}
+
 
 inputs:
   directory:
@@ -36,20 +39,26 @@ inputs:
                   - MIXED: Checks files both with CRLF and LF (mixed) line endings."
     required: false
     default: "crlf"
-  include_regex:
-    description: "Regular expression for including files (using `find` -regex).
-                  Note: The input `directory` will be prepended when forming regex.
-                  For example, default `directory` is `.` which is the repo root.
-                  So all file paths will have `./` as prefix.
-                  Take that into consideration when using regex pattern"
+  include_pattern:
+    description: "Include pattern for including files (using `find -regex` or `find -name`).
+                  Note: When pattern_type is `regex`, this is used as regex pattern.
+                  When pattern_type is `shell_glob`, this is used as shell glob pattern.
+                  For `regex` pattern_type, the match happens on the whole path.
+                  For `shell_glob` pattern_type, the path with the leading directories is removed and is operated on base filenames only.
+                  The default value `*` is used with the default pattern_type `shell_glob`.
+                  See https://man7.org/linux/man-pages/man1/find.1.html for more information."
     required: false
-    default: ".*"
-  exclude_regex:
-    description: "Regular expression for excluding files (using `find -not -regex`).
-                  Note: see `include_regex` note"
+    default: "*"
+  exclude_pattern:
+    description: "Regular expression for excluding files (using `find -not -regex` or `find -not -name`).
+                  Note: see `include_pattern` note section"
     required: false
-    default: "^$"
+    default: ""
   max_dir_depth:
     description: "Max depth of folder to search for files. Repo root directory `./` is at depth 1. See `man find` for more information."
     required: false
     default: "999"
+  pattern_type:
+    description: "Type of pattern match to use for `include_pattern` and `exclude_pattern`. Possible values are either `shell_glob` or `regex`."
+    required: false
+    default: "shell_glob"
