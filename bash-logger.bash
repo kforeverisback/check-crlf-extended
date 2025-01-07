@@ -13,13 +13,13 @@ COLOR_NC='\033[0m'            # No Color
 
 # Logger function
 log() {
-  local level="${1:-${COLOR_NC}}" # Default to no color if not provided
+  local level="${1:-INFO}" # Default to no color if not provided
   shift
   local message="$*"
   local timestamp="$(date "+%Y-%m-%d %H:%M:%S")"
   local color_variable="COLOR_$level"
   local color="${!color_variable}"
-  echo -e "${color}[${timestamp}] ${message}${COLOR_NC}"
+  echo -e "${color}${timestamp} [$level] ${message}${COLOR_NC}"
 }
 
 DEBUG()     { log "$FUNCNAME" "$*"; }
