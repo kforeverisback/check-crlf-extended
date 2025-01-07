@@ -108,7 +108,7 @@ jobs:
         with:
           directory: ./test-files
           line_ending_type: 'LF'
-          include_pattern: '.*space.*'
+          include_pattern: '.*space$'
           pattern_type: 'regex'
       - name: Test LF files include regex Results
         run: |
