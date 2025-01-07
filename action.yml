@@ -59,6 +59,11 @@ inputs:
     required: false
     default: "999"
   pattern_type:
-    description: "Type of pattern match to use for `include_pattern` and `exclude_pattern`. Possible values are either `shell_glob` or `regex`."
+    description: "Type of pattern match to use for `include_pattern` and `exclude_pattern`.
+              Possible values are either `shell_glob` or `regex`. Default is `shell_glob`.
+              For `regex` pattern_type, the match happens on the whole path.
+              For `shell_glob` pattern_type, the path with the leading directories
+              is removed and match happens on base filenames only.
+              The regex pattern follows egrep syntax. See `man egrep` for more information."
     required: false
     default: "shell_glob"
