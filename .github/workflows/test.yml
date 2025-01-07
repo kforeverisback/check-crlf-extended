@@ -22,7 +22,7 @@ jobs:
           line_ending_type: 'CRLF'
       - name: Test CRLF Results
         run: |
-          echo "Found files ${{steps.crlf_check.outputs.FILE_COUNT}}"
+          [[ ${{steps.crlf_check.outputs.FILE_COUNT}} == "64" ]] || exit 1
       - name: Check LF files
         uses: ./ # Uses an action in the root directory
         id: lf_check
@@ -30,6 +30,9 @@ jobs:
         with:
           directory: ./test-files
           line_ending_type: 'LF'
+      - name: Test LF Results
+        run: |
+          [[ ${{steps.lf_check.outputs.FILE_COUNT}} == "64" ]] || exit 1
       - name: Check Mixed files
         uses: ./ # Uses an action in the root directory
         id: mixed_check
@@ -37,40 +40,56 @@ jobs:
         with:
           directory: ./test-files
           line_ending_type: 'Mixed'
-      - name: Check CRLF files with include regex
+      - name: Test MIXED Results
+        run: |
+          [[ ${{steps.mixed_check.outputs.FILE_COUNT}} == "64" ]] || exit 1
+      - name: "Check CRLF files with glob CRLF*space"
         uses: ./ # Uses an action in the root directory
-        id: crlf_inc_regex_check
+        id: crlf_glob_check
         continue-on-error: true
         with:
           directory: ./test-files
           line_ending_type: 'CRLF'
-          include_regex: '.*CAP$'
-      - name: Check LF files with include regex
+          include_pattern: 'CRLF*only'
+      - name: Test CRLF files glob CRLF*space Results
+        run: |
+          [[ ${{steps.crlf_glob_check.outputs.FILE_COUNT}} == "8" ]] || exit 1
+      - name: Check LF files with glob LF*space
         uses: ./ # Uses an action in the root directory
-        id: lf_inc_regex_check
+        id: lf_glob_check
         continue-on-error: true
         with:
           directory: ./test-files
           line_ending_type: 'LF'
-          include_regex: '.*CAP$'
-      - name: Check LF files with include+exclude regex
+          include_pattern: 'LF*space'
+      - name: Test LF files glob LF*space Results
+        run: |
+          [[ ${{steps.lf_glob_check.outputs.FILE_COUNT}} == "8" ]] || exit 1
+      - name: Check LF files with include+exclude glob
         uses: ./ # Uses an action in the root directory
-        id: lf_inc_exc_regex_check
+        id: lf_inc_exc_glob_check
         continue-on-error: true
         with:
           directory: ./test-files
           line_ending_type: 'LF'
-          include_regex: '.*CAP$'
-          exclude_regex: '.*EXCLUDE.*'
-      - name: Check CRLF files with include+exclude regex
+          include_pattern: 'LF*'
+          exclude_pattern: '*only'
+      - name: Test LF files include+exclude glob Results
+        run: |
+          [[ ${{steps.lf_inc_exc_glob_check.outputs.FILE_COUNT}} == "8" ]] || exit 1
+      - name: Check CRLF files with include+exclude glob
         uses: ./ # Uses an action in the root directory
-        id: crlf_inc_exc_regex_check
+        id: crlf_inc_exc_glob_check
         continue-on-error: true
         with:
           directory: ./test-files
           line_ending_type: 'CRLF'
-          include_regex: '.*CAP$'
-          exclude_regex: '.*EXCLUDE.*'
+          include_pattern: 'CRLF*'
+          exclude_pattern: '*only'
+          pattern_type: 'regex'
+      - name: Test CRLF files include+exclude glob Results
+        run: |
+          [[ ${{steps.crlf_inc_exc_glob_check.outputs.FILE_COUNT}} == "8" ]] || exit 1
       - name: Check CRLF files with exclude regex
         uses: ./ # Uses an action in the root directory
         id: crlf_exc_regex_check
@@ -78,15 +97,23 @@ jobs:
         with:
           directory: ./test-files
           line_ending_type: 'CRLF'
-          exclude_regex: '.*EXCLUDE.*'
-      - name: Check LF files with exclude regex
+          exclude_pattern: '.*(EXCLUDE|exclude).*'
+          pattern_type: 'regex'
+      - name: Test CRLF files exclude regex Results
+        run: |
+          [[ ${{steps.crlf_exc_regex_check.outputs.FILE_COUNT}} == "32" ]] || exit 1
+      - name: Check LF files with include regex
         uses: ./ # Uses an action in the root directory
         id: lf_exc_regex_check
         continue-on-error: true
         with:
           directory: ./test-files
           line_ending_type: 'LF'
-          exclude_regex: '.*EXCLUDE.*'
+          include_pattern: '.*space.*'
+          pattern_type: 'regex'
+      - name: Test LF files include regex Results
+        run: |
+          [[ ${{steps.lf_exc_regex_check.outputs.FILE_COUNT}} == "32" ]] || exit 1
       - name: Check file depth for CRLF
         uses: ./ # Uses an action in the root directory
         id: crlf_depth_check
@@ -98,3 +125,6 @@ jobs:
       # Use the output from the `hello` step
       # - name: Get the output time
       #   run: echo "The time was ${{ steps.hello.outputs.time }}"
+      - name: Test CRLF files depth Results
+        run: |
+          [[ ${{steps.crlf_depth_check.outputs.FILE_COUNT}} == "8" ]] || exit 1
