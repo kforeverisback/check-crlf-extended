@@ -119,11 +119,19 @@ else
 
   # Output to Github's next stage
   if [[ -n "$GITHUB_ENV" ]]; then
-    echo "${count_of_file}" >> "$GITHUB_OUTPUT"  # First line would be the count of files
-    echo "${found_files[*]}" >> "$GITHUB_ENV"
+    echo "FILE_COUNT=${count_of_file}" >> "$GITHUB_ENV"
+    {
+      echo "FILE_LIST<<EOF"
+      echo "${found_files[*]}"
+      echo "EOF"
+    } >> "$GITHUB_ENV"
   fi
-  echo "${count_of_file}" >> "$GITHUB_OUTPUT"  # First line would be the count of files
-  echo "${found_files[*]}" >> "$GITHUB_OUTPUT" # Rest of the lines would be the file paths
+      echo "FILE_COUNT=${count_of_file}" >> "$GITHUB_OUTPUT"
+    {
+      echo "FILE_LIST<<EOF"
+      echo "${found_files[*]}"
+      echo "EOF"
+    } >> "$GITHUB_OUTPUT"
   exit 1
 fi
 
