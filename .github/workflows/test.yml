@@ -20,6 +20,12 @@ jobs:
         continue-on-error: true
         with:
           line_ending_type: 'CRLF'
+      - name: Test CRLF Results
+        env:
+          CRLF_RESULTS: ${{ steps.crlf_check.outputs }}
+        run: |
+            [[ -n "$GITHUB_OUTPUT" ]] && echo "Found files $(head -n1 <<<$GITHUB_OUTPUT)"
+            [[ -n "$GITHUB_OUTPUT" ]] && echo "Files with CRLF endings: $(tail -n+2 <<<$GITHUB_OUTPUT)"
       - name: Check LF files
         uses: ./ # Uses an action in the root directory
         id: lf_check

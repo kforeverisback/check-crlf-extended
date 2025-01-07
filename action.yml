@@ -1,6 +1,6 @@
 name: check-crlf-extended
 author: kforeverisback
-description: "Checks for non-binary files with CRLF/LF endings in given path. It automatically excludes `.git` folder from search"
+description: "Checks for non-binary files with CRLF/LF endings in given path. It automatically excludes `.git` folder from search. It will write number of files found (number) and followed by list of files with CRLF/LF/MIXED endings to GITHUB_OUTPUT variable."
 
 branding:
   icon: file-text
