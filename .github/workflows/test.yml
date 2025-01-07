@@ -86,7 +86,6 @@ jobs:
           line_ending_type: 'CRLF'
           include_pattern: 'CRLF*'
           exclude_pattern: '*only'
-          pattern_type: 'regex'
       - name: Test CRLF files include+exclude glob Results
         run: |
           [[ ${{steps.crlf_inc_exc_glob_check.outputs.FILE_COUNT}} == "8" ]] || exit 1
