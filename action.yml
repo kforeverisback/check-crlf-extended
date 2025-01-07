@@ -48,7 +48,7 @@ inputs:
                   The default value `*` is used with the default pattern_type `shell_glob`.
                   See https://man7.org/linux/man-pages/man1/find.1.html for more information."
     required: false
-    default: "*"
+    default: ""
   exclude_pattern:
     description: "Regular expression for excluding files (using `find -not -regex` or `find -not -name`).
                   Note: see `include_pattern` note section"
